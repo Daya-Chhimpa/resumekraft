@@ -54,7 +54,7 @@ const Editor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans selection:bg-pink-100 selection:text-pink-900">
       <AdModal isOpen={showAd} onComplete={onAdComplete} />
-      <header className="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10 transition-all">
+      <header className="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all">
         <Link to="/" className="font-bold text-xl flex items-center gap-2 text-slate-900 group">
           <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">R</div>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">ResumeKraft</span>
