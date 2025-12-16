@@ -49,12 +49,14 @@ const Editor = () => {
     
     // Improved PDF quality settings
     const canvas = await html2canvas(previewRef.current, {
-        scale: 2, // higher resolution
+        scale: 2, // Retain high resolution matching screen density
         useCORS: true,
         logging: false
     });
     
-    const imgData = canvas.toDataURL('image/png');
+    // Use JPEG instead of PNG to drastically reduce file size
+    // 0.8 quality offers great balance between crisp text and low size
+    const imgData = canvas.toDataURL('image/jpeg', 0.8);
     const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -64,7 +66,8 @@ const Editor = () => {
     const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    // 'FAST' compression helps reduce size further
+    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
     pdf.save(`${resumeData.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`);
   };
 
