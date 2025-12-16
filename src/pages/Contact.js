@@ -13,7 +13,7 @@ const Contact = () => {
           
           <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
             <h3 className="font-bold text-lg mb-2">Email Us</h3>
-            <p className="text-slate-600">support@resumekraft.com</p>
+            <p className="text-slate-600">resumekraft.contact@gmail.com</p>
           </div>
         </div>
       </div>
