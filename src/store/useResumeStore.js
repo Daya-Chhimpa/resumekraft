@@ -120,7 +120,17 @@ const useResumeStore = create(
           ...state.resumeData,
           skills: [
             ...(state.resumeData.skills || []),
-             { id: crypto.randomUUID(), name: '', level: 50 }
+             { id: crypto.randomUUID(), name: '', level: 100 }
+          ]
+        }
+      })),
+
+      addBulkSkills: (skillNames) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          skills: [
+            ...(state.resumeData.skills || []),
+            ...skillNames.map(name => ({ id: crypto.randomUUID(), name, level: 100 }))
           ]
         }
       })),

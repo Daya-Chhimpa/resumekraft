@@ -74,91 +74,92 @@ const Home = () => {
    };
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900">
+    <div className="min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900 overflow-x-hidden">
       <SEO />
       
-      {/* Navbar */}
+      {/* Navbar - Mobile Optimized */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
-             <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg flex-shrink-0">
                R
              </div>
-             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">ResumeKraft</span>
+             <span className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 hidden xs:block">ResumeKraft</span>
           </div>
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
              <a href="#templates" className="hover:text-pink-600 transition-colors">Templates</a>
              <a href="#features" className="hover:text-pink-600 transition-colors">Features</a>
              <a href="#faq" className="hover:text-pink-600 transition-colors">FAQ</a>
           </div>
-          <button className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-slate-800 transition-colors shadow-lg">
-             Get Started
-          </button>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button className="bg-slate-900 text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm hover:bg-slate-800 transition-colors shadow-lg active:scale-95 whitespace-nowrap">
+               Get Started
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative z-10 pt-40 pb-20 px-6">
-         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Hero Section - Mobile Optimized */}
+      <div className="relative z-10 pt-28 sm:pt-40 pb-12 sm:pb-20 px-3 sm:px-6">
+         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             
             {/* Left Content */}
             <motion.div 
                initial={{ opacity: 0, x: -50 }}
                animate={{ opacity: 1, x: 0 }}
                transition={{ duration: 0.8 }}
-               className="space-y-8 text-center lg:text-left z-20"
+               className="space-y-6 sm:space-y-8 text-center lg:text-left z-20"
             >
                <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-100 rounded-full text-pink-600 text-sm font-bold shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-50 text-pink-600 font-bold text-xs sm:text-sm mb-4"
                >
-                  <Star className="w-4 h-4 fill-current" />
-                  #1 Online Resume Builder
+                  <Star className="w-4 h-4" /> Rated #1 Resume Builder
                </motion.div>
 
-               <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
-                  The Best Online <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-purple-600 to-orange-500">Resume Builder</span>
+               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                  Build Your Dream <br className="hidden sm:block" />
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-orange-500">Resume in Minutes</span>
                </h1>
                
-               <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Create a professional, ATS-friendly resume in minutes. Choose from our premium collection of templates and land your dream job today.
+               <p className="text-base sm:text-lg lg:text-xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  Join 5,000,000+ professionals who got hired at top companies. <br className="hidden lg:block"/>
+                  Free to use • No Sign-up Required • ATS Friendly
                </p>
 
-               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                  <a href="#templates" className="bg-gradient-to-r from-pink-600 to-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-pink-500/20 hover:shadow-2xl hover:shadow-pink-500/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
-                     <FileText className="w-5 h-5" />
+               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
+                  <button onClick={() => navigate('/editor')} className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-bold text-lg hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
                      Create My Resume
-                  </a>
-                  <button className="bg-white text-slate-700 border border-slate-200 px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-50 transition-all duration-300 flex items-center justify-center gap-2">
-                     <Zap className="w-5 h-5 text-orange-500" />
-                     View Features
+                     <Zap className="w-5 h-5 group-hover:text-yellow-400 transition-colors" />
+                  </button>
+                  <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border-2 border-slate-200 rounded-full font-bold text-lg hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
+                     View Templates
+                     <FileText className="w-5 h-5" />
                   </button>
                </div>
 
-               <div className="pt-8 flex items-center justify-center lg:justify-start gap-8 text-slate-500 text-sm font-medium">
-                  <div className="flex -space-x-3">
-                     {[1,2,3,4].map(i => (
-                        <div key={i} className={`w-10 h-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center overflow-hidden`}>
-                           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`} alt="user" />
-                        </div>
-                     ))}
-                     <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">
-                        +10k
-                     </div>
+               <div className="flex items-center justify-center lg:justify-start gap-6 pt-8 text-sm font-medium text-slate-400">
+                  <div className="flex items-center gap-2">
+                     <CheckCircle className="w-5 h-5 text-green-500" /> Free Forever
                   </div>
-                  <div>Loved by 10,000+ job seekers</div>
+                  <div className="flex items-center gap-2">
+                     <CheckCircle className="w-5 h-5 text-green-500" /> ATS Friendly
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <CheckCircle className="w-5 h-5 text-green-500" /> Secure
+                  </div>
                </div>
             </motion.div>
 
             {/* Right Image/Graphic (Interactive 3D Tilt) */}
             <motion.div
-               initial={{ opacity: 0, scale: 0.9, y: 30 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.2 }} 
-               className="relative lg:h-[700px] flex items-center justify-center perspective-[2000px] z-10"
+               initial={{ opacity: 0, x: 50 }}
+               animate={{ opacity: 1, x: 0 }}
+               transition={{ duration: 0.8, delay: 0.2 }}
+               className="relative z-0 mt-8 lg:mt-0 items-center justify-center perspective-[2000px] z-10"
                onMouseMove={handleMouseMove}
                onMouseLeave={handleMouseLeave}
             >
@@ -244,7 +245,7 @@ const Home = () => {
                   <motion.div 
                      animate={{ y: [0, -10, 0] }}
                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                     className="absolute top-10 -right-12 bg-white p-4 rounded-2xl shadow-xl shadow-slate-200/50 z-20"
+                     className="hidden lg:block absolute top-10 -right-12 bg-white p-4 rounded-2xl shadow-xl shadow-slate-200/50 z-20"
                   >
                      <div className="flex items-center gap-3">
                         <div className="bg-orange-100 p-2 rounded-full text-orange-600">

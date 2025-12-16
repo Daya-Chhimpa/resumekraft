@@ -17,7 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const SortableSkillItem = ({ id, skill, handleChange, removeSectionItem }) => {
+const SortableSkillItem = ({ id, skill, handleChange, handleBlur, handlePaste, removeSectionItem }) => {
     const {
         attributes,
         listeners,
@@ -50,6 +50,8 @@ const SortableSkillItem = ({ id, skill, handleChange, removeSectionItem }) => {
                 type="text"
                 value={skill.name}
                 onChange={(e) => handleChange(id, e.target.value)}
+                onBlur={(e) => handleBlur(id, e.target.value)}
+                onPaste={(e) => handlePaste(e, id)}
                 className="bg-transparent border-none focus:outline-none text-sm text-slate-700 w-24"
                 placeholder="Skill"
             />
@@ -64,7 +66,7 @@ const SortableSkillItem = ({ id, skill, handleChange, removeSectionItem }) => {
 };
 
 const SkillsForm = () => {
-  const { resumeData, addSkill, updateSkill, reorderSection, removeSectionItem } = useResumeStore();
+  const { resumeData, addSkill, addBulkSkills, updateSkill, reorderSection, removeSectionItem } = useResumeStore();
   const { skills } = resumeData;
 
   const sensors = useSensors(
@@ -86,6 +88,48 @@ const SkillsForm = () => {
 
   const handleChange = (id, value) => {
     updateSkill(id, 'name', value);
+  };
+
+  const handleBlur = (id, value) => {
+    if (value.includes(',')) {
+      const parts = value.split(',');
+      const firstSkill = parts[0].trim();
+      const otherSkills = parts.slice(1).map(s => s.trim()).filter(s => s.length > 0);
+      
+      if (otherSkills.length > 0) {
+        // Update the current input with the trimmed first part
+        updateSkill(id, 'name', firstSkill);
+        // Add the rest as new skills
+        addBulkSkills(otherSkills);
+      }
+    }
+  };
+
+  const handlePaste = (e, id) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text');
+    
+    if (pastedData.includes(',')) {
+      const parts = pastedData.split(',');
+      // If pasting into existing text, append to it? 
+      // Simpler: treat the paste as the content. 
+      // Or better: let standard paste happen, but trigger split?
+      // Actually, preventing default and handling logical split is better for "Bulk Add" feel.
+      
+      const firstSkill = parts[0].trim();
+      const otherSkills = parts.slice(1).map(s => s.trim()).filter(s => s.length > 0);
+      
+      handleChange(id, firstSkill); // Update current field immediately
+      if (otherSkills.length > 0) {
+         addBulkSkills(otherSkills);
+      }
+    } else {
+      // Standard paste if no comma
+      // We need to manually insert text if we prevented default
+      // But we can just call handleChange with new value
+      const currentVal = resumeData.skills.find(s => s.id === id)?.name || '';
+      handleChange(id, currentVal + pastedData);
+    }
   };
 
   return (
@@ -119,6 +163,8 @@ const SkillsForm = () => {
                 id={skill.id}
                 skill={skill}
                 handleChange={handleChange}
+                handleBlur={handleBlur}
+                handlePaste={handlePaste}
                 removeSectionItem={removeSectionItem}
               />
             ))}

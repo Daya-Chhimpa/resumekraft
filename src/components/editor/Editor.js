@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Layout, FileText, Zap } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import PersonalDetailsForm from './PersonalDetailsForm';
@@ -20,6 +21,16 @@ const Editor = () => {
   const previewRef = React.useRef(null);
   const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
   const [isClearModalOpen, setIsClearModalOpen] = React.useState(false);
+  
+  // Mobile Tab State
+  const [mobileTab, setMobileTab] = React.useState('edit'); // 'edit' | 'preview'
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleClearDataConfirm = () => {
     useResumeStore.getState().resetResumeData();
@@ -82,26 +93,29 @@ const Editor = () => {
          confirmText="Yes, Clear Data"
          isDestructive={true}
       />
-      <header className="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all">
+      <header className="border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all">
         <Link to="/" className="font-bold text-xl flex items-center gap-2 text-slate-900 group">
-          <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">R</div>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">ResumeKraft</span>
+          <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform flex-shrink-0">R</div>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 hidden sm:block">ResumeKraft</span>
         </Link>
-        <div className="flex gap-4">
+        <div className="flex gap-2 sm:gap-4 items-center">
           <button 
             onClick={() => setIsClearModalOpen(true)}
-            className="px-4 py-2 text-sm font-bold text-red-500 hover:text-red-600 transition-colors hover:bg-red-50 rounded-full"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors hover:bg-red-50 rounded-full flex-shrink-0 whitespace-nowrap"
           >
             Clear Data
           </button>
-          <button className="px-5 py-2 text-sm font-bold text-slate-600 hover:text-pink-600 transition-colors bg-slate-100 hover:bg-pink-50 rounded-full">
+          
+          {/* Hide Preview button on mobile since we have tabs */}
+          <button className="hidden md:block px-5 py-2 text-sm font-bold text-slate-600 hover:text-pink-600 transition-colors bg-slate-100 hover:bg-pink-50 rounded-full">
             Preview
           </button>
+          
           <button 
             onClick={handleDownloadPDF}
-            className="px-6 py-2 text-sm font-bold bg-gradient-to-r from-pink-600 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-pink-500/30 hover:scale-105 transition-all active:scale-95"
+            className="px-4 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm font-bold bg-gradient-to-r from-pink-600 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-pink-500/30 hover:scale-105 transition-all active:scale-95 flex-shrink-0 whitespace-nowrap"
           >
-            Download PDF
+            Download <span className="hidden sm:inline">PDF</span>
           </button>
         </div>
       </header>
@@ -110,9 +124,33 @@ const Editor = () => {
       <div className="w-full bg-slate-50 border-b border-slate-200">
           <GoogleAd slot="TOP_AD_SLOT_ID" format="horizontal" style={{ height: '90px' }} />
       </div>
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar / Forms */}
-        <div className="w-1/2 border-r bg-slate-50 overflow-y-auto custom-scrollbar flex flex-col">
+
+      <div className="flex-1 flex overflow-hidden relative">
+        
+        {/* Mobile Tab Toggles (Visible only on mobile) */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+           <button 
+             onClick={() => setMobileTab('edit')}
+             className={`flex flex-col items-center gap-1 text-xs font-bold transition-colors ${mobileTab === 'edit' ? 'text-pink-600' : 'text-slate-400'}`}
+           >
+              <div className={`p-2 rounded-full ${mobileTab === 'edit' ? 'bg-pink-50' : 'bg-transparent'}`}>
+                <Layout className="w-5 h-5" />
+              </div>
+              Editor
+           </button>
+           <button 
+             onClick={() => setMobileTab('preview')}
+             className={`flex flex-col items-center gap-1 text-xs font-bold transition-colors ${mobileTab === 'preview' ? 'text-pink-600' : 'text-slate-400'}`}
+           >
+              <div className={`p-2 rounded-full ${mobileTab === 'preview' ? 'bg-pink-50' : 'bg-transparent'}`}>
+                <FileText className="w-5 h-5" />
+              </div>
+              Preview
+           </button>
+        </div>
+
+        {/* Sidebar / Forms - Hidden on mobile if not in 'edit' tab */}
+        <div className={`${isMobile && mobileTab !== 'edit' ? 'hidden' : 'flex'} w-full md:w-1/2 border-r bg-slate-50 overflow-y-auto custom-scrollbar flex-col pb-24 md:pb-0`}>
            {/* Tab Navigation */}
            <div className="sticky top-0 z-40 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 px-8 pt-6 pb-2">
               <div className="flex space-x-6">
@@ -133,7 +171,7 @@ const Editor = () => {
               </div>
            </div>
 
-           <div className="p-8 pb-32">
+           <div className="p-4 md:p-8 pb-32">
              {activeTab === 'content' ? (
                 <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-left-5">
                   <div id="section-personal" className="transition-all duration-300 rounded-2xl">
@@ -174,11 +212,12 @@ const Editor = () => {
            </div>
         </div>
 
-        {/* Live Preview - Simple HTML view for now */}
-        <div className="w-1/2 bg-slate-100 p-8 overflow-y-auto flex justify-center custom-scrollbar">
+        {/* Live Preview - Hidden on mobile if not in 'preview' tab */}
+        <div className={`${isMobile && mobileTab !== 'preview' ? 'hidden' : 'flex'} w-full md:w-1/2 bg-slate-100 p-4 md:p-8 overflow-y-auto justify-center custom-scrollbar pb-24 md:pb-0`}>
             <div 
                 ref={previewRef}
-                className="w-[210mm] min-h-[297mm] bg-white shadow-2xl origin-top transition-transform duration-200"
+                className="min-w-[210mm] w-[210mm] min-h-[50vh] md:min-h-[297mm] bg-white shadow-2xl origin-top transition-transform duration-200 scale-[0.45] sm:scale-75 md:scale-100 origin-top-center md:origin-top"
+                style={{ transformOrigin: 'top center' }}
             >
                <TemplateRenderer onSectionClick={handleSectionClick} />
             </div>
