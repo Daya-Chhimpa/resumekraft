@@ -13,11 +13,18 @@ import useResumeStore from '../../store/useResumeStore';
 import DesignPanel from './DesignPanel';
 
 import GoogleAd from '../GoogleAd';
+import ConfirmationModal from '../ConfirmationModal';
 
 const Editor = () => {
   const { resumeData, setActiveSection } = useResumeStore();
   const previewRef = React.useRef(null);
   const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
+  const [isClearModalOpen, setIsClearModalOpen] = React.useState(false);
+
+  const handleClearDataConfirm = () => {
+    useResumeStore.getState().resetResumeData();
+    setIsClearModalOpen(false);
+  };
 
   const handleSectionClick = (sectionName) => {
     setActiveTab('content');
@@ -63,6 +70,15 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans selection:bg-pink-100 selection:text-pink-900">
+      <ConfirmationModal 
+         isOpen={isClearModalOpen}
+         onClose={() => setIsClearModalOpen(false)}
+         onConfirm={handleClearDataConfirm}
+         title="Reset Resume Data?"
+         message="This will permanently delete all your entries and restore the default template. This action cannot be undone."
+         confirmText="Yes, Clear Data"
+         isDestructive={true}
+      />
       <header className="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all">
         <Link to="/" className="font-bold text-xl flex items-center gap-2 text-slate-900 group">
           <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">R</div>
@@ -70,11 +86,7 @@ const Editor = () => {
         </Link>
         <div className="flex gap-4">
           <button 
-            onClick={() => {
-              if (window.confirm('Are you sure you want to reset all data? This cannot be undone.')) {
-                 useResumeStore.getState().resetResumeData();
-              }
-            }}
+            onClick={() => setIsClearModalOpen(true)}
             className="px-4 py-2 text-sm font-bold text-red-500 hover:text-red-600 transition-colors hover:bg-red-50 rounded-full"
           >
             Clear Data
