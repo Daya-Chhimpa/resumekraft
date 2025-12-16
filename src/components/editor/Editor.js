@@ -26,8 +26,38 @@ const Editor = () => {
   const [mobileTab, setMobileTab] = React.useState('edit'); // 'edit' | 'preview'
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
 
+  // Dynamic Resume Scaling
+  const [scale, setScale] = React.useState(1);
+
   React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      
+      // Calculate scale
+      const isDesktop = window.innerWidth >= 768;
+      const screenWidth = window.innerWidth;
+      
+      let availableWidth;
+      if (isDesktop) {
+        // Desktop: 50% width minus padding (approx 64px)
+        availableWidth = (screenWidth / 2) - 80; 
+      } else {
+        // Mobile: Full width minus padding
+        availableWidth = screenWidth - 48;
+      }
+      
+      // A4 width in px (approx)
+      const a4WidthStr = '210mm';
+      // We can estimate 210mm is roughly 794px at 96dpi
+      const baseWidth = 794; 
+      
+      const newScale = Math.min(availableWidth / baseWidth, 1);
+      setScale(Number(newScale.toFixed(2))); // Round to 2 decimals
+    };
+
+    // Initial call
+    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -213,11 +243,17 @@ const Editor = () => {
         </div>
 
         {/* Live Preview - Hidden on mobile if not in 'preview' tab */}
-        <div className={`${isMobile && mobileTab !== 'preview' ? 'hidden' : 'flex'} w-full md:w-1/2 bg-slate-100 p-4 md:p-8 overflow-y-auto justify-center custom-scrollbar pb-24 md:pb-0`}>
+        <div className={`${isMobile && mobileTab !== 'preview' ? 'hidden' : 'flex'} w-full md:w-1/2 bg-slate-100 p-4 md:p-8 overflow-y-auto justify-center custom-scrollbar pb-24 md:pb-0 relative`}>
+             {/* Sticky Container so the resume "sticks" while you scroll if it's small, 
+                 but typically we want it to scroll with the page. 
+                 Actually, just centering it is fine. */}
             <div 
                 ref={previewRef}
-                className="min-w-[210mm] w-[210mm] min-h-[50vh] md:min-h-[297mm] bg-white shadow-2xl origin-top transition-transform duration-200 scale-[0.45] sm:scale-75 md:scale-100 origin-top-center md:origin-top"
-                style={{ transformOrigin: 'top center' }}
+                className="min-w-[210mm] w-[210mm] min-h-[50vh] md:min-h-[297mm] bg-white shadow-2xl origin-top transition-transform duration-100 ease-out"
+                style={{ 
+                    transform: `scale(${scale})`,
+                    marginBottom: `-${(1 - scale) * 100}%` // Simple compensation for bottom whitespace
+                }}
             >
                <TemplateRenderer onSectionClick={handleSectionClick} />
             </div>
