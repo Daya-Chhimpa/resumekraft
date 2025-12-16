@@ -1,7 +1,13 @@
 import React from 'react';
 
 const Pulse = ({ data }) => {
-  const { personalInfo, experience, education, skills, hobbies } = data;
+  const { 
+    personalInfo = {}, 
+    experience = [], 
+    education = [], 
+    skills = [], 
+    hobbies = [] 
+  } = data || {};
 
   return (
     <div className="w-full h-full min-h-[297mm] bg-white flex">
@@ -10,31 +16,31 @@ const Pulse = ({ data }) => {
          {/* Photo - Prominent */}
          <div className="w-40 h-40 rounded-full bg-white p-2 shadow-xl mb-4">
            <div className="w-full h-full rounded-full overflow-hidden bg-slate-200">
-             {personalInfo.photo ? (
+             {personalInfo?.photo ? (
                <img src={personalInfo.photo} alt="Profile" className="w-full h-full object-cover" />
              ) : (
                <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-4xl">
-                 {personalInfo.fullName.charAt(0)}
+                 {personalInfo?.fullName?.charAt(0) || 'R'}
                </div>
              )}
            </div>
          </div>
 
          <div className="w-full">
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">{personalInfo.fullName}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">{personalInfo?.fullName || 'Your Name'}</h1>
             <div className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full uppercase tracking-wider mb-6">
-              {personalInfo.title}
+              {personalInfo?.title || 'Job Title'}
             </div>
             
             <div className="space-y-2 text-sm text-slate-600">
-               {personalInfo.email && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.email}</div>}
-               {personalInfo.phone && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.phone}</div>}
-               {personalInfo.location && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.location}</div>}
+               {personalInfo?.email && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.email}</div>}
+               {personalInfo?.phone && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.phone}</div>}
+               {personalInfo?.location && <div className="p-2 bg-white rounded shadow-sm">{personalInfo.location}</div>}
             </div>
          </div>
 
          {/* Skills - Bars */}
-         {skills.length > 0 && (
+         {skills?.length > 0 && (
            <div className="w-full text-left">
              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Skills</h3>
              <div className="space-y-3">
@@ -69,7 +75,7 @@ const Pulse = ({ data }) => {
 
       {/* Main */}
       <div className="w-2/3 p-10 space-y-10">
-         {personalInfo.summary && (
+         {personalInfo?.summary && (
            <div className="bg-blue-600 text-white p-6 rounded-xl shadow-lg -mt-16 relative z-10">
              <h2 className="text-sm font-bold opacity-80 uppercase mb-2">My Objective</h2>
              <p className="leading-relaxed">
@@ -78,7 +84,7 @@ const Pulse = ({ data }) => {
            </div>
          )}
 
-         {experience.length > 0 && (
+         {experience?.length > 0 && (
            <section>
              <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
                <span className="w-2 h-8 bg-blue-500 mr-3 rounded-full"></span>
@@ -102,7 +108,7 @@ const Pulse = ({ data }) => {
            </section>
          )}
 
-         {education.length > 0 && (
+         {education?.length > 0 && (
            <section>
              <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
                <span className="w-2 h-8 bg-blue-500 mr-3 rounded-full"></span>
