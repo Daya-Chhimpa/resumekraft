@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, FileText, Zap } from 'lucide-react';
+import { Layout, FileText, Zap, Plus } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import PersonalDetailsForm from './PersonalDetailsForm';
@@ -9,6 +9,8 @@ import EducationForm from './EducationForm';
 import SkillsForm from './SkillsForm';
 import LanguagesForm from './LanguagesForm';
 import HobbiesForm from './HobbiesForm';
+import CustomSectionForm from './CustomSectionForm'; // Value Add
+import AddSectionModal from './AddSectionModal'; // Value Add
 import TemplateRenderer from '../templates/TemplateRenderer';
 import useResumeStore from '../../store/useResumeStore';
 import DesignPanel from './DesignPanel';
@@ -21,6 +23,12 @@ const Editor = () => {
   const previewRef = React.useRef(null);
   const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
   const [isClearModalOpen, setIsClearModalOpen] = React.useState(false);
+  const [isAddSectionModalOpen, setIsAddSectionModalOpen] = React.useState(false); // New state
+
+  const handleAddSection = (title) => {
+    useResumeStore.getState().addCustomSection(title);
+    setIsAddSectionModalOpen(false);
+  };
   
   // Mobile Tab State
   const [mobileTab, setMobileTab] = React.useState('edit'); // 'edit' | 'preview'
@@ -219,13 +227,31 @@ const Editor = () => {
                   <div id="section-languages" className="transition-all duration-300 rounded-2xl">
                     <LanguagesForm />
                   </div>
+
+
                   <div id="section-hobbies" className="transition-all duration-300 rounded-2xl">
                     <HobbiesForm />
                   </div>
+
+                  {/* Custom Sections */}
+                  {resumeData.customSections?.map(section => (
+                      <div key={section.id} id={`section-${section.id}`} className="transition-all duration-300 rounded-2xl">
+                          <CustomSectionForm sectionId={section.id} title={section.title} />
+                      </div>
+                  ))}
                   
-                  {/* Future sections (Projects) will go here */}
-                  <div className="p-4 bg-white rounded-lg border border-slate-200 border-dashed flex items-center justify-center text-slate-400 h-32 hover:border-pink-300 hover:bg-pink-50 transition-colors cursor-pointer">
-                      + Add More Sections
+                  {/* Add More Sections Button */}
+                  <div 
+                      onClick={() => setIsAddSectionModalOpen(true)}
+                      className="p-4 bg-white rounded-lg border border-slate-200 border-dashed flex items-center justify-center text-slate-400 h-32 hover:border-pink-300 hover:bg-pink-50 transition-colors cursor-pointer group"
+                  >
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="bg-slate-100 p-3 rounded-full group-hover:bg-pink-100 transition-colors">
+                            <Plus className="w-6 h-6 text-slate-400 group-hover:text-pink-500" />
+                        </div>
+                        <span className="font-semibold group-hover:text-pink-600 transition-colors">Add Custom Section</span>
+                        <span className="text-xs opacity-70">Certifications, Awards, etc.</span>
+                      </div>
                   </div>
                 </div>
              ) : (
@@ -234,6 +260,12 @@ const Editor = () => {
                 </div>
              )}
            </div>
+
+           <AddSectionModal 
+              isOpen={isAddSectionModalOpen}
+              onClose={() => setIsAddSectionModalOpen(false)}
+              onConfirm={handleAddSection}
+           />
 
            {/* Sidebar Bottom Ad */}
            <div className="mt-auto px-6 py-4 border-t border-slate-200 bg-white">

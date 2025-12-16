@@ -18,6 +18,7 @@ const useResumeStore = create(
         education: [],
         skills: [],
         projects: [],
+        customSections: [],
         themeSettings: {
           colors: {
             primary: '#ec4899', // Pink-500
@@ -181,6 +182,78 @@ const useResumeStore = create(
           )
         }
       })),
+
+      // Custom Sections Actions
+      addCustomSection: (title) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: [
+            ...(state.resumeData.customSections || []),
+            { 
+              id: crypto.randomUUID(), 
+              title: title, 
+              items: [] 
+            }
+          ]
+        }
+      })),
+
+      removeCustomSection: (sectionId) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: (state.resumeData.customSections || []).filter(s => s.id !== sectionId)
+        }
+      })),
+
+      updateCustomSectionTitle: (sectionId, title) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: (state.resumeData.customSections || []).map(s => 
+             s.id === sectionId ? { ...s, title } : s
+          )
+        }
+      })),
+
+      addCustomSectionItem: (sectionId) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: (state.resumeData.customSections || []).map(s => 
+            s.id === sectionId ? {
+                ...s,
+                items: [
+                    ...s.items,
+                    { id: crypto.randomUUID(), title: '', subtitle: '', date: '', description: '' }
+                ]
+            } : s
+          )
+        }
+      })),
+
+      updateCustomSectionItem: (sectionId, itemId, field, value) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: (state.resumeData.customSections || []).map(s => 
+            s.id === sectionId ? {
+                ...s,
+                items: s.items.map(item => 
+                    item.id === itemId ? { ...item, [field]: value } : item
+                )
+            } : s
+          )
+        }
+      })),
+
+      removeCustomSectionItem: (sectionId, itemId) => set((state) => ({
+        resumeData: {
+          ...state.resumeData,
+          customSections: (state.resumeData.customSections || []).map(s => 
+            s.id === sectionId ? {
+                ...s,
+                items: s.items.filter(item => item.id !== itemId)
+            } : s
+          )
+        }
+      })),
       
       setActiveTemplate: (templateId) => set(() => ({
         activeTemplate: templateId
@@ -207,8 +280,9 @@ const useResumeStore = create(
           experience: [],
           education: [],
           skills: [],
-          languages: [], // Ensure initialized
-          hobbies: [],   // Ensure initialized
+          languages: [],
+          hobbies: [],
+          customSections: [], // Ensure initialized
           projects: [],
           themeSettings: {
             colors: {
@@ -233,19 +307,22 @@ const useResumeStore = create(
     }),
     {
       name: 'resume-storage',
-      version: 1,
+      version: 2,
       migrate: (persistedState, version) => {
-        if (version === 0) {
-          return {
-            ...persistedState,
+        let state = persistedState;
+        
+        if (version === 0 || version === 1) {
+          state = {
+            ...state,
             resumeData: {
-              ...persistedState.resumeData,
-              languages: persistedState.resumeData.languages || [],
-              hobbies: persistedState.resumeData.hobbies || [],
-              experience: persistedState.resumeData.experience || [],
-              education: persistedState.resumeData.education || [],
-              skills: persistedState.resumeData.skills || [],
-              themeSettings: persistedState.resumeData.themeSettings || {
+              ...state.resumeData,
+              languages: state.resumeData.languages || [],
+              hobbies: state.resumeData.hobbies || [],
+              experience: state.resumeData.experience || [],
+              education: state.resumeData.education || [],
+              skills: state.resumeData.skills || [],
+              customSections: state.resumeData.customSections || [],
+              themeSettings: state.resumeData.themeSettings || {
                 colors: {
                   primary: '#ec4899',
                   secondary: '#f97316',
@@ -262,10 +339,10 @@ const useResumeStore = create(
                 }
               }
             },
-            activeTemplate: persistedState.activeTemplate || 'aurora'
+            activeTemplate: state.activeTemplate || 'aurora'
           };
         }
-        return persistedState;
+        return state;
       },
     }
   )

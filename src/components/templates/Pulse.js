@@ -125,6 +125,37 @@ const Pulse = ({ data }) => {
              </div>
            </section>
          )}
+
+         {/* Custom Sections */}
+         {data.customSections?.map(section => (
+            section.items.length > 0 && (
+                <section key={section.id}>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+                    <span className="w-2 h-8 bg-blue-500 mr-3 rounded-full"></span>
+                    {section.title}
+                    </h2>
+                    <div className="space-y-6 pl-4 border-l-2 border-slate-100 ml-1">
+                    {section.items.map(item => (
+                        <div key={item.id} className="relative pl-6">
+                            <div className="absolute -left-[9px] top-2 w-4 h-4 bg-white border-4 border-blue-500 rounded-full"></div>
+                            <h3 className="text-lg font-bold text-slate-800">{item.title}</h3>
+                            {item.subtitle && <div className="text-blue-600 font-medium mb-1">{item.subtitle}</div>}
+                            {item.date && (
+                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">
+                                    {item.date}
+                                </div>
+                            )}
+                            {item.description && (
+                                <p className="text-slate-600 text-sm leading-relaxed">
+                                    {item.description}
+                                </p>
+                            )}
+                        </div>
+                    ))}
+                    </div>
+                </section>
+            )
+         ))}
       </div>
     </div>
   );

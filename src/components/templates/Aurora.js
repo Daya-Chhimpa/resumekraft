@@ -206,6 +206,49 @@ const Aurora = ({ data, onSectionClick }) => {
             </div>
           </section>
         )}
+
+        {/* Custom Sections */}
+        {data.customSections?.map(section => (
+           section.items.length > 0 && (
+            <section
+              key={section.id}
+              className="cursor-pointer hover:bg-slate-50 p-4 -m-4 rounded-xl transition-colors group relative"
+            >
+              <h2
+                  className="text-2xl font-bold mb-6 flex items-center gap-3"
+                  style={{ color: colors.text, fontFamily: fonts.heading }}
+              >
+                <span className="w-8 h-1 block" style={{ backgroundColor: colors.primary }}></span>
+                {section.title}
+              </h2>
+              <div className="space-y-8">
+                {section.items.map((item) => (
+                  <div key={item.id} className="relative pl-4 border-l-2" style={{ borderColor: `${colors.text}10` }}>
+                    <div className="flex justify-between items-baseline mb-1">
+                      <h3 className="text-xl font-bold" style={{ color: colors.text }}>{item.title}</h3>
+                      {item.date && (
+                        <span className="text-sm font-medium whitespace-nowrap ml-4" style={{ color: `${colors.text}60` }}>
+                            {item.date}
+                        </span>
+                      )}
+                    </div>
+                    {item.subtitle && (
+                        <div className="text-base font-semibold mb-3" style={{ color: colors.primary }}>{item.subtitle}</div>
+                    )}
+                    {item.description && (
+                        <p
+                            className="leading-relaxed text-sm whitespace-pre-line"
+                            style={{ color: `${colors.text}90`, lineHeight: spacing.lineHeight }}
+                        >
+                            {item.description}
+                        </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+           )
+        ))}
       </div>
     </div>
   );
