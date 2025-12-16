@@ -24,13 +24,13 @@ const templates = {
   skyline: Skyline,
 };
 
-const TemplateRenderer = () => {
+const TemplateRenderer = ({ onSectionClick }) => {
   const { activeTemplate, resumeData } = useResumeStore();
   const TemplateComponent = templates[activeTemplate] || Aurora;
 
   return (
     <div className="resume-template-container w-full h-full bg-white text-slate-900">
-      <TemplateComponent data={resumeData} />
+      <TemplateComponent data={resumeData} onSectionClick={onSectionClick} />
     </div>
   );
 };

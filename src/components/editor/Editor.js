@@ -10,13 +10,33 @@ import LanguagesForm from './LanguagesForm';
 import HobbiesForm from './HobbiesForm';
 import TemplateRenderer from '../templates/TemplateRenderer';
 import useResumeStore from '../../store/useResumeStore';
+import DesignPanel from './DesignPanel';
 
 import AdModal from '../AdModal';
 
 const Editor = () => {
-  const { resumeData } = useResumeStore();
+  const { resumeData, setActiveSection } = useResumeStore();
   const previewRef = React.useRef(null);
   const [showAd, setShowAd] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
+
+  const handleSectionClick = (sectionName) => {
+    setActiveTab('content');
+    setActiveSection(sectionName);
+    
+    // Smooth scroll to section
+    setTimeout(() => {
+        const element = document.getElementById(`section-${sectionName}`);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Add highlight effect
+            element.classList.add('ring-2', 'ring-pink-500', 'ring-offset-2');
+            setTimeout(() => {
+                element.classList.remove('ring-2', 'ring-pink-500', 'ring-offset-2');
+            }, 2000);
+        }
+    }, 100);
+  };
 
   const handleDownloadClick = () => {
     setShowAd(true);
@@ -60,6 +80,16 @@ const Editor = () => {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">ResumeKraft</span>
         </Link>
         <div className="flex gap-4">
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                 useResumeStore.getState().resetResumeData();
+              }
+            }}
+            className="px-4 py-2 text-sm font-bold text-red-500 hover:text-red-600 transition-colors hover:bg-red-50 rounded-full"
+          >
+            Clear Data
+          </button>
           <button className="px-5 py-2 text-sm font-bold text-slate-600 hover:text-pink-600 transition-colors bg-slate-100 hover:bg-pink-50 rounded-full">
             Preview
           </button>
@@ -73,19 +103,59 @@ const Editor = () => {
       </header>
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar / Forms */}
-        <div className="w-1/2 border-r bg-slate-50 overflow-y-auto p-8 custom-scrollbar">
-           <div className="max-w-2xl mx-auto space-y-8">
-             <PersonalDetailsForm />
-             <ExperienceForm />
-             <EducationForm />
-             <SkillsForm />
-             <LanguagesForm />
-             <HobbiesForm />
-             
-             {/* Future sections (Projects) will go here */}
-             <div className="p-4 bg-white rounded-lg border border-slate-200 border-dashed flex items-center justify-center text-slate-400 h-32">
-                 + Add More Sections
-             </div>
+        <div className="w-1/2 border-r bg-slate-50 overflow-y-auto custom-scrollbar flex flex-col">
+           {/* Tab Navigation */}
+           <div className="sticky top-0 z-40 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 px-8 pt-6 pb-2">
+              <div className="flex space-x-6">
+                <button 
+                  onClick={() => setActiveTab('content')}
+                  className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'content' ? 'text-pink-600' : 'text-slate-500 hover:text-slate-800'}`}
+                >
+                  Content
+                  {activeTab === 'content' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-600 rounded-full"></span>}
+                </button>
+                <button 
+                  onClick={() => setActiveTab('design')}
+                  className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'design' ? 'text-purple-600' : 'text-slate-500 hover:text-slate-800'}`}
+                >
+                  Design & Style
+                  {activeTab === 'design' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-600 rounded-full"></span>}
+                </button>
+              </div>
+           </div>
+
+           <div className="p-8 pb-32">
+             {activeTab === 'content' ? (
+                <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-left-5">
+                  <div id="section-personal" className="transition-all duration-300 rounded-2xl">
+                    <PersonalDetailsForm />
+                  </div>
+                  <div id="section-experience" className="transition-all duration-300 rounded-2xl">
+                    <ExperienceForm />
+                  </div>
+                  <div id="section-education" className="transition-all duration-300 rounded-2xl">
+                    <EducationForm />
+                  </div>
+                  <div id="section-skills" className="transition-all duration-300 rounded-2xl">
+                    <SkillsForm />
+                  </div>
+                  <div id="section-languages" className="transition-all duration-300 rounded-2xl">
+                    <LanguagesForm />
+                  </div>
+                  <div id="section-hobbies" className="transition-all duration-300 rounded-2xl">
+                    <HobbiesForm />
+                  </div>
+                  
+                  {/* Future sections (Projects) will go here */}
+                  <div className="p-4 bg-white rounded-lg border border-slate-200 border-dashed flex items-center justify-center text-slate-400 h-32 hover:border-pink-300 hover:bg-pink-50 transition-colors cursor-pointer">
+                      + Add More Sections
+                  </div>
+                </div>
+             ) : (
+                <div className="max-w-2xl mx-auto">
+                   <DesignPanel />
+                </div>
+             )}
            </div>
         </div>
 
@@ -95,7 +165,7 @@ const Editor = () => {
                 ref={previewRef}
                 className="w-[210mm] min-h-[297mm] bg-white shadow-2xl origin-top transition-transform duration-200"
             >
-               <TemplateRenderer />
+               <TemplateRenderer onSectionClick={handleSectionClick} />
             </div>
         </div>
       </div>

@@ -18,9 +18,28 @@ const useResumeStore = create(
         education: [],
         skills: [],
         projects: [],
+        themeSettings: {
+          colors: {
+            primary: '#ec4899', // Pink-500
+            secondary: '#f97316', // Orange-500
+            text: '#0f172a', // Slate-900
+            background: '#ffffff',
+          },
+          fonts: {
+            heading: 'Inter',
+            body: 'Inter',
+          },
+          spacing: {
+            margin: 10, // mm
+            lineHeight: 1.5,
+          }
+        }
       },
-      
+      activeSection: null, // 'personal', 'experience', 'education', 'skills', 'design'
+
       // Actions
+      setActiveSection: (section) => set({ activeSection: section }),
+
       updatePersonalInfo: (field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
@@ -28,11 +47,41 @@ const useResumeStore = create(
         }
       })),
 
+      updateThemeSettings: (category, field, value) => set((state) => {
+        const currentThemeSettings = state.resumeData.themeSettings || {};
+        const currentCategory = currentThemeSettings[category] || {};
+
+        return {
+          resumeData: {
+            ...state.resumeData,
+            themeSettings: {
+              ...currentThemeSettings,
+              [category]: {
+                ...currentCategory,
+                [field]: value
+              }
+            }
+          }
+        };
+      }),
+
+      reorderSection: (section, oldIndex, newIndex) => set((state) => {
+        const list = [...(state.resumeData[section] || [])];
+        const [removed] = list.splice(oldIndex, 1);
+        list.splice(newIndex, 0, removed);
+        return {
+          resumeData: {
+            ...state.resumeData,
+            [section]: list
+          }
+        };
+      }),
+
       addExperience: () => set((state) => ({
         resumeData: {
           ...state.resumeData,
           experience: [
-            ...state.resumeData.experience,
+            ...(state.resumeData.experience || []),
              { id: crypto.randomUUID(), company: '', role: '', startDate: '', endDate: '', description: '' }
           ]
         }
@@ -41,7 +90,7 @@ const useResumeStore = create(
       updateExperience: (id, field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          experience: state.resumeData.experience.map((exp) => 
+          experience: (state.resumeData.experience || []).map((exp) => 
             exp.id === id ? { ...exp, [field]: value } : exp
           )
         }
@@ -51,7 +100,7 @@ const useResumeStore = create(
         resumeData: {
           ...state.resumeData,
           education: [
-            ...state.resumeData.education,
+            ...(state.resumeData.education || []),
              { id: crypto.randomUUID(), institution: '', degree: '', startDate: '', endDate: '', description: '' }
           ]
         }
@@ -60,7 +109,7 @@ const useResumeStore = create(
       updateEducation: (id, field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          education: state.resumeData.education.map((edu) => 
+          education: (state.resumeData.education || []).map((edu) => 
             edu.id === id ? { ...edu, [field]: value } : edu
           )
         }
@@ -70,7 +119,7 @@ const useResumeStore = create(
         resumeData: {
           ...state.resumeData,
           skills: [
-            ...state.resumeData.skills,
+            ...(state.resumeData.skills || []),
              { id: crypto.randomUUID(), name: '', level: 50 }
           ]
         }
@@ -79,7 +128,7 @@ const useResumeStore = create(
       updateSkill: (id, field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          skills: state.resumeData.skills.map((skill) => 
+          skills: (state.resumeData.skills || []).map((skill) => 
             skill.id === id ? { ...skill, [field]: value } : skill
           )
         }
@@ -89,7 +138,7 @@ const useResumeStore = create(
         resumeData: {
           ...state.resumeData,
           languages: [
-            ...state.resumeData.languages,
+            ...(state.resumeData.languages || []),
              { id: crypto.randomUUID(), name: '', proficiency: 'Fluent' }
           ]
         }
@@ -98,7 +147,7 @@ const useResumeStore = create(
       updateLanguage: (id, field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          languages: state.resumeData.languages.map((lang) => 
+          languages: (state.resumeData.languages || []).map((lang) => 
             lang.id === id ? { ...lang, [field]: value } : lang
           )
         }
@@ -108,7 +157,7 @@ const useResumeStore = create(
         resumeData: {
           ...state.resumeData,
           hobbies: [
-            ...state.resumeData.hobbies,
+            ...(state.resumeData.hobbies || []),
              { id: crypto.randomUUID(), name: '' }
           ]
         }
@@ -117,7 +166,7 @@ const useResumeStore = create(
       updateHobby: (id, field, value) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          hobbies: state.resumeData.hobbies.map((hobby) => 
+          hobbies: (state.resumeData.hobbies || []).map((hobby) => 
             hobby.id === id ? { ...hobby, [field]: value } : hobby
           )
         }
@@ -130,7 +179,43 @@ const useResumeStore = create(
       removeSectionItem: (section, id) => set((state) => ({
         resumeData: {
           ...state.resumeData,
-          [section]: state.resumeData[section].filter((item) => item.id !== id)
+          [section]: (state.resumeData[section] || []).filter((item) => item.id !== id)
+        }
+      })),
+
+      resetResumeData: () => set(() => ({
+        resumeData: {
+          personalInfo: {
+            fullName: 'John Doe',
+            email: 'john.doe@example.com',
+            phone: '(555) 123-4567',
+            title: 'Software Engineer',
+            location: 'San Francisco, CA',
+            summary: 'Experienced software engineer with a passion for building scalable web applications.',
+            links: { linkedin: '', github: '', website: '' }
+          },
+          experience: [],
+          education: [],
+          skills: [],
+          languages: [], // Ensure initialized
+          hobbies: [],   // Ensure initialized
+          projects: [],
+          themeSettings: {
+            colors: {
+              primary: '#ec4899',
+              secondary: '#f97316',
+              text: '#0f172a',
+              background: '#ffffff',
+            },
+            fonts: {
+              heading: 'Inter',
+              body: 'Inter',
+            },
+            spacing: {
+              margin: 10,
+              lineHeight: 1.5,
+            }
+          }
         }
       })),
 
@@ -150,6 +235,22 @@ const useResumeStore = create(
               experience: persistedState.resumeData.experience || [],
               education: persistedState.resumeData.education || [],
               skills: persistedState.resumeData.skills || [],
+              themeSettings: persistedState.resumeData.themeSettings || {
+                colors: {
+                  primary: '#ec4899',
+                  secondary: '#f97316',
+                  text: '#0f172a',
+                  background: '#ffffff',
+                },
+                fonts: {
+                  heading: 'Inter',
+                  body: 'Inter',
+                },
+                spacing: {
+                  margin: 10,
+                  lineHeight: 1.5,
+                }
+              }
             },
             activeTemplate: persistedState.activeTemplate || 'aurora'
           };

@@ -2,9 +2,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SEO = ({ title, description, keywords, image, url }) => {
-  const siteTitle = 'ResumeKraft - Free Professional Resume Builder & CV Maker';
-  const defaultDescription = 'Create job-winning resumes in minutes with ResumeKraft. The #1 Free Online Resume Builder. Choose from premium, ATS-friendly templates and export professionally. No sign-up required.';
-  const defaultKeywords = 'free resume builder, online cv maker, professional resume templates, pdf resume, ats friendly resume, resume maker, cv builder, job application, career tools';
+  const siteTitle = 'ResumeKraft - #1 Free Professional Resume Builder & CV Maker';
+  const defaultDescription = 'Build a professional resume in minutes with ResumeKraft. The best free AI resume builder 2024. Create ATS-friendly CVs, download PDF, and land your dream job. No watermarks, no sign-up needed.';
+  const defaultKeywords = 'free resume builder, best resume builder 2024, online cv maker, professional resume templates, pdf resume creator, ats friendly resume, resume maker free, job application tool, cv builder, resume design, google docs resume alternative';
   const siteUrl = 'https://resumekraft.com'; // Replace with actual domain
   const defaultImage = 'https://resumekraft.com/og-image.jpg'; // Replace with actual image
 

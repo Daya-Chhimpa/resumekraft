@@ -99,6 +99,17 @@ const PersonalDetailsForm = () => {
             placeholder="+1 (555) 000-0000"
           />
         </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-700">Location</label>
+          <input
+            type="text"
+            name="location"
+            value={personalInfo.location || ''}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="San Francisco, CA"
+          />
+        </div>
         <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Summary</label>
           <textarea
