@@ -12,12 +12,11 @@ import TemplateRenderer from '../templates/TemplateRenderer';
 import useResumeStore from '../../store/useResumeStore';
 import DesignPanel from './DesignPanel';
 
-import AdModal from '../AdModal';
+import GoogleAd from '../GoogleAd';
 
 const Editor = () => {
   const { resumeData, setActiveSection } = useResumeStore();
   const previewRef = React.useRef(null);
-  const [showAd, setShowAd] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
 
   const handleSectionClick = (sectionName) => {
@@ -36,15 +35,6 @@ const Editor = () => {
             }, 2000);
         }
     }, 100);
-  };
-
-  const handleDownloadClick = () => {
-    setShowAd(true);
-  };
-
-  const onAdComplete = async () => {
-    setShowAd(false);
-    await handleDownloadPDF();
   };
 
   const handleDownloadPDF = async () => {
@@ -73,7 +63,6 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans selection:bg-pink-100 selection:text-pink-900">
-      <AdModal isOpen={showAd} onComplete={onAdComplete} />
       <header className="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all">
         <Link to="/" className="font-bold text-xl flex items-center gap-2 text-slate-900 group">
           <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">R</div>
@@ -94,13 +83,18 @@ const Editor = () => {
             Preview
           </button>
           <button 
-            onClick={handleDownloadClick}
+            onClick={handleDownloadPDF}
             className="px-6 py-2 text-sm font-bold bg-gradient-to-r from-pink-600 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-pink-500/30 hover:scale-105 transition-all active:scale-95"
           >
             Download PDF
           </button>
         </div>
       </header>
+      
+      {/* Top Content Ad Placement */}
+      <div className="w-full bg-slate-50 border-b border-slate-200">
+          <GoogleAd slot="TOP_AD_SLOT_ID" format="horizontal" style={{ height: '90px' }} />
+      </div>
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar / Forms */}
         <div className="w-1/2 border-r bg-slate-50 overflow-y-auto custom-scrollbar flex flex-col">
@@ -156,6 +150,12 @@ const Editor = () => {
                    <DesignPanel />
                 </div>
              )}
+           </div>
+
+           {/* Sidebar Bottom Ad */}
+           <div className="mt-auto px-6 py-4 border-t border-slate-200 bg-white">
+               <div className="text-xs text-center text-slate-400 mb-2 uppercase tracking-wider font-bold">Sponsored</div>
+               <GoogleAd slot="SIDEBAR_AD_SLOT_ID" format="rectangle" style={{ minHeight: '250px' }} />
            </div>
         </div>
 

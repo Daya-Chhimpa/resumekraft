@@ -1,10 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FileText, CheckCircle, Zap, Download, Star, Shield, Layout } from 'lucide-react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import useResumeStore from '../store/useResumeStore';
 import TemplateThumbnail from './TemplateThumbnail';
-import AdModal from './AdModal';
 import GoogleAd from './GoogleAd';
 import SEO from './SEO';
 
@@ -41,21 +40,11 @@ const itemVariants = {
 const Home = () => {
   const navigate = useNavigate();
   const { setActiveTemplate } = useResumeStore();
-  const [showAd, setShowAd] = React.useState(false);
-  const [pendingTemplateId, setPendingTemplateId] = React.useState(null);
   const [visibleCount, setVisibleCount] = React.useState(4);
 
   const handleCreate = (templateId) => {
-    setPendingTemplateId(templateId);
-    setShowAd(true);
-  };
-
-  const handleAdComplete = () => {
-    setShowAd(false);
-    if (pendingTemplateId) {
-        setActiveTemplate(pendingTemplateId);
-        navigate('/editor');
-    }
+    setActiveTemplate(templateId);
+    navigate('/editor');
   };
 
   const loadMore = () => {
@@ -87,7 +76,6 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900">
       <SEO />
-      <AdModal isOpen={showAd} onComplete={handleAdComplete} />
       
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
@@ -432,7 +420,7 @@ const Home = () => {
           </div>
       </div>
 
-      <GoogleAd slot="892347239" />
+      <GoogleAd slot="HOME_BOTTOM_SLOT_ID" format="horizontal" />
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 pt-20 pb-10 relative z-10">
@@ -451,24 +439,23 @@ const Home = () => {
                   <h4 className="font-bold text-slate-900 mb-6">Product</h4>
                   <ul className="space-y-4 text-slate-500 text-sm">
                      <li><a href="#templates" className="hover:text-pink-600 transition-colors">Templates</a></li>
-                     <li><a href="#" className="hover:text-pink-600 transition-colors">Examples</a></li>
                      <li><a href="#features" className="hover:text-pink-600 transition-colors">Features</a></li>
                   </ul>
                </div>
                <div>
                   <h4 className="font-bold text-slate-900 mb-6">Support</h4>
                   <ul className="space-y-4 text-slate-500 text-sm">
-                     <li><a href="#" className="hover:text-pink-600 transition-colors">FAQ</a></li>
-                     <li><a href="#" className="hover:text-pink-600 transition-colors">Contact</a></li>
-                     <li><a href="#" className="hover:text-pink-600 transition-colors">Privacy</a></li>
+                     <li><a href="#faq" className="hover:text-pink-600 transition-colors">FAQ</a></li>
+                     <li><Link to="/contact" className="hover:text-pink-600 transition-colors">Contact</Link></li>
+                     <li><Link to="/privacy" className="hover:text-pink-600 transition-colors">Privacy</Link></li>
                   </ul>
                </div>
             </div>
             <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400 font-medium">
                <p>© 2025 ResumeKraft. All rights reserved.</p>
                <div className="flex gap-8">
-                  <span className="hover:text-slate-600 cursor-pointer transition-colors">Terms</span>
-                  <span className="hover:text-slate-600 cursor-pointer transition-colors">Privacy</span>
+                  <Link to="/terms" className="hover:text-slate-600 cursor-pointer transition-colors">Terms</Link>
+                  <Link to="/privacy" className="hover:text-slate-600 cursor-pointer transition-colors">Privacy</Link>
                   <span className="hover:text-slate-600 cursor-pointer transition-colors">Cookies</span>
                </div>
             </div>
