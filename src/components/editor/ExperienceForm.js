@@ -50,8 +50,12 @@ const SortableExperienceItem = ({ id, exp, handleChange, handleDelete }) => {
              <GripVertical className="w-4 h-4" />
            </button>
            <button 
-             onClick={() => handleDelete(id)}
-             className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded"
+             onClick={(e) => {
+               e.stopPropagation();
+               handleDelete(id);
+             }}
+             className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+             title="Delete this experience"
            >
              <Trash2 className="w-4 h-4" />
            </button>

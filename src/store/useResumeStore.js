@@ -33,6 +33,18 @@ const useResumeStore = create(
           spacing: {
             margin: 10, // mm
             lineHeight: 1.5,
+          },
+          layout: {
+            sidebarPosition: 'left', // 'left' | 'right'
+            sectionOrder: ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies'],
+            sectionVisibility: {
+              personal: true,
+              experience: true,
+              education: true,
+              skills: true,
+              languages: true,
+              hobbies: true,
+            }
           }
         }
       },
@@ -298,6 +310,18 @@ const useResumeStore = create(
             spacing: {
               margin: 10,
               lineHeight: 1.5,
+            },
+            layout: {
+              sidebarPosition: 'left',
+              sectionOrder: ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies'],
+              sectionVisibility: {
+                personal: true,
+                experience: true,
+                education: true,
+                skills: true,
+                languages: true,
+                hobbies: true,
+              }
             }
           }
         }
@@ -322,20 +346,33 @@ const useResumeStore = create(
               education: state.resumeData.education || [],
               skills: state.resumeData.skills || [],
               customSections: state.resumeData.customSections || [],
-              themeSettings: state.resumeData.themeSettings || {
-                colors: {
+              themeSettings: {
+                ...(state.resumeData.themeSettings || {}),
+                colors: state.resumeData.themeSettings?.colors || {
                   primary: '#ec4899',
                   secondary: '#f97316',
                   text: '#0f172a',
                   background: '#ffffff',
                 },
-                fonts: {
+                fonts: state.resumeData.themeSettings?.fonts || {
                   heading: 'Inter',
                   body: 'Inter',
                 },
-                spacing: {
+                spacing: state.resumeData.themeSettings?.spacing || {
                   margin: 10,
                   lineHeight: 1.5,
+                },
+                layout: state.resumeData.themeSettings?.layout || {
+                  sidebarPosition: 'left',
+                  sectionOrder: ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies'],
+                  sectionVisibility: {
+                    personal: true,
+                    experience: true,
+                    education: true,
+                    skills: true,
+                    languages: true,
+                    hobbies: true,
+                  }
                 }
               }
             },

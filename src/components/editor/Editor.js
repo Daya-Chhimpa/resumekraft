@@ -1,8 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, FileText, Zap, Plus } from 'lucide-react';
+import { Layout, FileText, Plus } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import PersonalDetailsForm from './PersonalDetailsForm';
 import ExperienceForm from './ExperienceForm';
 import EducationForm from './EducationForm';
@@ -14,16 +27,29 @@ import AddSectionModal from './AddSectionModal'; // Value Add
 import TemplateRenderer from '../templates/TemplateRenderer';
 import useResumeStore from '../../store/useResumeStore';
 import DesignPanel from './DesignPanel';
+import SortableSection from './SortableSection';
 
 import GoogleAd from '../GoogleAd';
 import ConfirmationModal from '../ConfirmationModal';
 
 const Editor = () => {
-  const { resumeData, setActiveSection } = useResumeStore();
+  const { resumeData, setActiveSection, updateThemeSettings } = useResumeStore();
   const previewRef = React.useRef(null);
   const [activeTab, setActiveTab] = React.useState('content'); // 'content' | 'design'
   const [isClearModalOpen, setIsClearModalOpen] = React.useState(false);
   const [isAddSectionModalOpen, setIsAddSectionModalOpen] = React.useState(false); // New state
+
+  // Drag and Drop Sensors for Section Reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleAddSection = (title) => {
     useResumeStore.getState().addCustomSection(title);
@@ -91,6 +117,26 @@ const Editor = () => {
             }, 2000);
         }
     }, 100);
+  };
+
+  const handleSectionDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      const currentOrder = resumeData.themeSettings?.layout?.sectionOrder || 
+        ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies'];
+      
+      const oldIndex = currentOrder.indexOf(active.id);
+      const newIndex = currentOrder.indexOf(over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrder = [...currentOrder];
+        const [removed] = newOrder.splice(oldIndex, 1);
+        newOrder.splice(newIndex, 0, removed);
+        
+        updateThemeSettings('layout', 'sectionOrder', newOrder);
+      }
+    }
   };
 
   const handleDownloadPDF = async () => {
@@ -210,37 +256,58 @@ const Editor = () => {
            </div>
 
            <div className="p-4 md:p-8 pb-32">
-             {activeTab === 'content' ? (
-                <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-left-5">
-                  <div id="section-personal" className="transition-all duration-300 rounded-2xl">
-                    <PersonalDetailsForm />
-                  </div>
-                  <div id="section-experience" className="transition-all duration-300 rounded-2xl">
-                    <ExperienceForm />
-                  </div>
-                  <div id="section-education" className="transition-all duration-300 rounded-2xl">
-                    <EducationForm />
-                  </div>
-                  <div id="section-skills" className="transition-all duration-300 rounded-2xl">
-                    <SkillsForm />
-                  </div>
-                  <div id="section-languages" className="transition-all duration-300 rounded-2xl">
-                    <LanguagesForm />
-                  </div>
+              {activeTab === 'content' ? (
+                 <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-left-5">
+                   {/* Personal Details - Always at top, not draggable */}
+                   <div id="section-personal" className="transition-all duration-300 rounded-2xl">
+                     <PersonalDetailsForm />
+                   </div>
 
+                   {/* Drag and Drop Context for Other Sections */}
+                   <DndContext
+                     sensors={sensors}
+                     collisionDetection={closestCenter}
+                     onDragEnd={handleSectionDragEnd}
+                   >
+                     <SortableContext
+                       items={(resumeData.themeSettings?.layout?.sectionOrder || ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies']).filter(key => key !== 'personal')}
+                       strategy={verticalListSortingStrategy}
+                     >
+                       {/* Render sections in order (excluding personal) */}
+                       {(resumeData.themeSettings?.layout?.sectionOrder || ['personal', 'experience', 'education', 'skills', 'languages', 'hobbies'])
+                         .filter(key => key !== 'personal')
+                         .map((sectionKey) => {
+                         // Section component mapping
+                         const sectionComponents = {
+                           experience: { Component: ExperienceForm, title: 'Experience' },
+                           education: { Component: EducationForm, title: 'Education' },
+                           skills: { Component: SkillsForm, title: 'Skills' },
+                           languages: { Component: LanguagesForm, title: 'Languages' },
+                           hobbies: { Component: HobbiesForm, title: 'Hobbies' },
+                         };
 
-                  <div id="section-hobbies" className="transition-all duration-300 rounded-2xl">
-                    <HobbiesForm />
-                  </div>
+                         const section = sectionComponents[sectionKey];
+                         if (!section) return null;
 
-                  {/* Custom Sections */}
-                  {resumeData.customSections?.map(section => (
-                      <div key={section.id} id={`section-${section.id}`} className="transition-all duration-300 rounded-2xl">
-                          <CustomSectionForm sectionId={section.id} title={section.title} />
-                      </div>
-                  ))}
-                  
-                  {/* Add More Sections Button */}
+                         const { Component, title } = section;
+
+                         return (
+                           <SortableSection key={sectionKey} id={sectionKey} title={title}>
+                             <Component />
+                           </SortableSection>
+                         );
+                       })}
+                     </SortableContext>
+                   </DndContext>
+
+                   {/* Custom Sections */}
+                   {resumeData.customSections?.map(section => (
+                       <div key={section.id} id={`section-${section.id}`} className="transition-all duration-300 rounded-2xl">
+                           <CustomSectionForm sectionId={section.id} title={section.title} />
+                       </div>
+                   ))}
+                   
+                   {/* Add More Sections Button */}
                   <div 
                       onClick={() => setIsAddSectionModalOpen(true)}
                       className="p-4 bg-white rounded-lg border border-slate-200 border-dashed flex items-center justify-center text-slate-400 h-32 hover:border-pink-300 hover:bg-pink-50 transition-colors cursor-pointer group"
