@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FileText, CheckCircle, Zap, Download, Star, Shield, Layout } from 'lucide-react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import useResumeStore from '../store/useResumeStore';
 import TemplateThumbnail from './TemplateThumbnail';
 import GoogleAd from './GoogleAd';

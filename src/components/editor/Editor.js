@@ -81,7 +81,6 @@ const Editor = () => {
       }
       
       // A4 width in px (approx)
-      const a4WidthStr = '210mm';
       // We can estimate 210mm is roughly 794px at 96dpi
       const baseWidth = 794; 
       

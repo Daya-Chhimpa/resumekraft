@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Titan = ({ data }) => {
-  const { personalInfo, experience, education, skills, languages, hobbies } = data;
+  const { personalInfo, experience, education, skills } = data;
 
   return (
     <div className="w-full h-full min-h-[297mm] bg-white text-black font-sans">

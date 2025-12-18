@@ -1,5 +1,4 @@
 import React from 'react';
-import TemplateRenderer from './templates/TemplateRenderer.js';
 import Aurora from './templates/Aurora';
 import Noir from './templates/Noir';
 import NeoClassic from './templates/NeoClassic';

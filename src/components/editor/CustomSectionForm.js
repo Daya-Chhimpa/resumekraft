@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trash2, GripVertical, Calendar, Building, Type } from 'lucide-react';
+import { Plus, Trash2, Calendar, Building, Type } from 'lucide-react';
 import useResumeStore from '../../store/useResumeStore';
 
 const CustomSectionForm = ({ sectionId, title }) => {
